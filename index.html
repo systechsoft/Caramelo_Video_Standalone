@@ -2118,7 +2118,7 @@ document.getElementById('brandLogo').src = "data:image/png;base64," + LOGO_B64;
         const preW = preRatio <= 1 ? 1080 : Math.round(1080 * preRatio);
         const preH = preRatio <= 1 ? Math.round(1080 / preRatio) : 1080;
         for (let i = 0; i < clips.length; i++) {
-          filterComplex1 += `[${i}:v]scale=${preW}:${preH}:force_original_aspect_ratio=increase,crop=${preW}:${preH},setpts=PTS-STARTPTS[v${i}n];[${i}:a]asetpts=PTS-STARTPTS[a${i}n];`;
+          filterComplex1 += `[${i}:v]scale=${preW}:${preH}:force_original_aspect_ratio=increase,crop=${preW}:${preH},fps=30,setpts=PTS-STARTPTS[v${i}n];[${i}:a]aformat=sample_rates=48000:channel_layouts=stereo,asetpts=PTS-STARTPTS[a${i}n];`;
         }
         let cum = clipDuration(clips[0]);
         let vLabel = `v0n`, aLabel = `a0n`;
