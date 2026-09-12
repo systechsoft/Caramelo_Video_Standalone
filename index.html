@@ -845,7 +845,19 @@ document.getElementById('brandLogo').src = "data:image/png;base64," + LOGO_B64;
 // ============================================================
 
 (function () {
-  const VIDEO_ENGINE_BASE_URL = "https://systechsoft.github.io/caramelo-post/motor-video/";
+  // relative path — works wherever this app's index.html lives (root,
+  // /video/, or any other folder), as long as motor-video/ sits right next
+  // to it. A hardcoded absolute URL here was pointing at the OLD location
+  // and broke the moment the app moved to its own /video/ folder.
+  // TWO different base paths are needed here:
+  // - coreURL/wasmURL are resolved by the ffmpeg.js library RELATIVE TO ITS
+  //   OWN location (which already sits inside motor-video/) — passing
+  //   "./motor-video/..." there made it look for
+  //   ".../motor-video/motor-video/..." (doubled). Bare filenames are correct.
+  // - the plain fetch() calls below (fonts) run from the MAIN page's
+  //   location instead, so THOSE need the real relative folder path.
+  const VIDEO_ENGINE_BASE_URL = ""; // bare filename — resolved by ffmpeg.js itself
+  const VIDEO_ASSETS_BASE_URL = "./motor-video/"; // resolved from the page
   const MAX_CLIPS = 8;
   const MAX_TEXTS = 4;
   const MAX_TOTAL_SECONDS = 180;
@@ -2020,7 +2032,7 @@ document.getElementById('brandLogo').src = "data:image/png;base64," + LOGO_B64;
     if (loadedVideoFonts.has(virtualName)) return virtualName;
     let bytes;
     if (family === 'Hackney' || !file) {
-      const resp = await fetch(VIDEO_ENGINE_BASE_URL + 'Hackney.ttf');
+      const resp = await fetch(VIDEO_ASSETS_BASE_URL + 'Hackney.ttf');
       bytes = new Uint8Array(await resp.arrayBuffer());
     } else {
       const resp = await fetch(FONT_BASE_URL + encodeURIComponent(file));
@@ -2034,7 +2046,7 @@ document.getElementById('brandLogo').src = "data:image/png;base64," + LOGO_B64;
   async function ensureAlexBrushInFFmpegFS() {
     const virtualName = 'AlexBrush.ttf';
     if (loadedVideoFonts.has(virtualName)) return virtualName;
-    const resp = await fetch(VIDEO_ENGINE_BASE_URL + 'AlexBrush.ttf');
+    const resp = await fetch(VIDEO_ASSETS_BASE_URL + 'AlexBrush.ttf');
     const bytes = new Uint8Array(await resp.arrayBuffer());
     await ffmpeg.writeFile(virtualName, bytes);
     loadedVideoFonts.add(virtualName);
